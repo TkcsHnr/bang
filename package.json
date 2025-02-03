@@ -17,7 +17,9 @@
 		"@sveltejs/adapter-auto": "^4.0.0",
 		"@sveltejs/kit": "^2.16.0",
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",
+		"@types/adm-zip": "^0.5.7",
 		"@types/downloadjs": "^1.4.6",
+		"@types/file-saver": "^2.0.7",
 		"@types/node": "^22.13.0",
 		"autoprefixer": "^10.4.20",
 		"daisyui": "^4.12.23",
@@ -33,7 +35,8 @@
 		"@fortawesome/fontawesome-free": "^6.7.2",
 		"dexie": "^4.0.11",
 		"downloadjs": "^1.4.7",
-		"fs": "^0.0.1-security",
-		"html-to-image": "^1.11.11"
+		"html-to-image": "^1.11.11",
+		"jszip": "^3.10.1",
+		"stream": "^0.0.3"
 	}
 }

@@ -223,7 +223,7 @@
 		</button>
 	</div>
 
-	<div class="gamecard" bind:this={cardElement}>
+	<div class="gamecard" id="card{card.id}" bind:this={cardElement}>
 		<div class="content" class:hitbox>
 			<input
 				autocomplete="off"

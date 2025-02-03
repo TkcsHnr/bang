@@ -4,7 +4,8 @@
 	import type { PageData } from './$types';
 	import { liveQuery } from 'dexie';
 	import { browser } from '$app/environment';
-
+	import { toPng } from 'html-to-image';
+    import JSZip from 'jszip';
 
 
 	export let data: PageData;
@@ -30,17 +31,44 @@
             }
 		});
 	}
+
+    async function downloadAll() {
+        let zip = new JSZip();
+        
+        for(const card of $cards) {
+			let cardElement = document.getElementById(`card${card.id}`);
+			if(!cardElement) return;
+
+            let dataUrl = await toPng(cardElement);
+			let res = await fetch(dataUrl);
+			let blob = await res.blob();
+            zip.file(`${card.id}.png`, blob);
+		}
+        
+        zip.generateAsync({type: "blob"})
+        .then(function(content) {
+            //saveAs(content, "example.zip");
+            let link = document.createElement('a');
+			link.href = URL.createObjectURL(content);            ;
+			link.download = `cards.zip`;
+			link.click();
+        });
+    }
 </script>
 
-<div class="join">
+<div class="join join-vertical sm:join-horizontal">
 	<button class="join-item btn btn-neutral" onclick={randomCardNumbers}>
-		Random card numbers
-		<i class="fa-solid fa-shuffle text-lg"></i>
+		Random numbers
+		<i class="fa-solid fa-shuffle"></i>
 	</button>
 	<button class="join-item btn btn-success" onclick={() => addCard()}>
 		Add new card
-		<i class="fa-regular fa-square-plus text-lg"></i>
+		<i class="fa-regular fa-square-plus"></i>
 	</button>
+    <button class="join-item btn btn-info" onclick={downloadAll}>
+        Download all
+        <i class="fa-regular fa-file-zipper"></i>
+    </button>
 </div>
 
 {#if $cards}
