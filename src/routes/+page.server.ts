@@ -1,5 +1,5 @@
 import type { PageServerLoad } from './$types';
-import fs from 'fs';
+import fs from 'node:fs';
 import path from 'path';
 export const load = (async () => {
     const directoryPath = path.resolve('static/symbols');
@@ -14,4 +14,4 @@ export const load = (async () => {
         borders = fs.readdirSync(directoryPath2);
     } catch(err) {}
     return {symbols, borders};
-}) satisfies PageServerLoad;
+}) satisfies PageServerLoad;    
