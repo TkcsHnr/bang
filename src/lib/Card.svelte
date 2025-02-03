@@ -88,6 +88,8 @@
 		updateCard(card.id, { suit: card.suit });
 	}
 	function updateTitle() {
+		card.title = card.title.toUpperCase();
+
 		if (!card.id) return;
 		updateCard(card.id, { title: card.title });
 
