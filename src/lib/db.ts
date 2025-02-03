@@ -16,7 +16,7 @@ export const default_card: card_type = {
     id: undefined,
     descEnable: true,
     title: "BANG",
-    border: "border_blue.png",
+    border: "blue.png",
     imageUrl: "/placeholder.jpg",
     description: "Szétlövik a fejedet.",
     symbols: ["bang.png"],
@@ -52,4 +52,8 @@ export async function updateCard(id: number, updates: Partial<card_type>): Promi
     } catch (error) {
         console.error("Failed to update item:", error);
     }
+}
+
+export async function deleteCard(id: number): Promise<void> {
+    await db.cards.delete(id);
 }

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { toPng } from 'html-to-image';
-	import { default_card, type card_type, updateCard } from './db';
+	import { default_card, type card_type, updateCard, deleteCard } from './db';
 
 	export let symbol_files: string[] = [];
 	export let border_files: string[] = [];
@@ -91,12 +91,18 @@
 	function updateTitle() {
 		if(!card.id) return;
 		updateCard(card.id, {title: card.title});
+
+		adjustTitle();	
 	}
 	function updateDesc() {
 		if(!card.id) return;
 		updateCard(card.id, {description: card.description});
 
 		adjustDesc();
+	}
+	function removeCard() {
+		if(!card.id) return;
+		deleteCard(card.id);
 	}
 
 	function downloadCard() {
@@ -142,8 +148,9 @@
 		<h3 class="text-lg font-bold">Choose border</h3>
 		<form method="dialog" class="flex flex-wrap gap-4 mt-4 w-full">
 			{#each border_files as b}
-				<button class="btn h-fit p-0" onclick={() => updateBorder(b)}>
+				<button class="btn h-fit p-0 relative" onclick={() => updateBorder(b)}>
 					<img src="/borders/{b}" alt={b} class="w-24" />
+					<span class="absolute mx-auto my-auto">{b.replace(".png", "")}</span>
 				</button>
 			{/each}
 		</form>
@@ -153,35 +160,44 @@
 <div class="flex items-center flex-row-reverse">
 	<div class="join join-vertical">
 		<button
-			class="btn join-item btn-sm {card.descEnable ? 'btn-success' : 'btn-error'} !rounded-tl-none"
+			class="btn join-item btn-sm {card.descEnable ? 'btn-neutral' : 'btn-ghost border border-base-content border-opacity-20'} !rounded-tl-none"
 			onclick={updateDescEnable}
 			aria-label="description"
 		>
 			<i class="fa-solid fa-file-lines"></i>
 			<i class="fa-solid {card.descEnable ? 'fa-check' : 'fa-xmark'}"></i>
 		</button>
-		<select class="join-item select select-bordered select-sm text-base" bind:value={card.rank} onchange={updateRank}>
-			{#each ranks as r}
-				<option value={r}>{r}</option>
-			{/each}
-		</select>
-		<select class="join-item select select-bordered select-sm text-base" bind:value={card.suit} onchange={updateSuit}>
-			{#each suits as s}
-				<option value={s}>{suit_map[`${s}`]}</option>
-			{/each}
-		</select>
+		{#if ["blue.png", "brown.png", "gun.png"].includes(card.border)}
+			<select class="join-item select select-bordered select-sm text-base" bind:value={card.rank} onchange={updateRank}>
+				{#each ranks as r}
+					<option value={r}>{r}</option>
+				{/each}
+			</select>
+			<select class="join-item select select-bordered select-sm text-base" bind:value={card.suit} onchange={updateSuit}>
+				{#each suits as s}
+					<option value={s}>{suit_map[`${s}`]}</option>
+				{/each}
+			</select>
+		{/if}
 		<button
-			class="btn btn-sm btn-warning city-20 join-item h-fit"
+			class="btn btn-sm btn-neutral city-20 join-item h-fit"
 			onclick={() => symbolModal.showModal()}
 		>
-			<img src="/symbols/allother.png" alt="symbols" class="w-10" />
+			<img src="/symbols/anyone.png" alt="symbols" class="w-8" />
 		</button>
 		<button
-			class="btn btn-sm !rounded-bl-none btn-info join-item"
+			class="btn btn-sm btn-info join-item"
 			aria-label="download"
 			onclick={downloadCard}
 		>
-			<i class="fa-solid fa-download text-lg"></i>
+			<i class="fa-solid fa-download"></i>
+		</button>
+		<button
+			class="btn btn-sm btn-error !rounded-bl-none join-item"
+			aria-label="remove"
+			onclick={removeCard}
+		>
+			<i class="fa-solid fa-trash"></i>
 		</button>
 	</div>
 
@@ -192,10 +208,9 @@
 				name="title"
 				class="title"
 				class:hitbox
-				oninput={adjustTitle}
 				bind:this={titleElement}
 				bind:value={card.title}
-				onchange={updateTitle}
+				oninput={updateTitle}
 			/>
 			<div class="hero" class:hitbox>
 				<img src={card.imageUrl} alt="hero" />
@@ -209,7 +224,7 @@
 						<img
 							src="/symbols/{symbol}"
 							alt={symbol}
-							class={card.description.length > 0 ? 'max-h-[50%]' : ''}
+							class:hitbox
 						/>
 					</button>
 				{/each}
@@ -225,10 +240,12 @@
 					</div>
 				{/if}
 			</div>
-			<div class="corner" class:hitbox>
-				<p>{card.rank}</p>
-				<img src="/symbols/{card.suit}.png" alt={card.suit} />
-			</div>
+			{#if ["blue.png", "brown.png", "gun.png"].includes(card.border)}
+				<div class="corner" class:hitbox>
+					<p>{card.rank}</p>
+					<img src="/symbols/{card.suit}.png" alt={card.suit} />
+				</div>
+			{/if}
 		</div>
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
@@ -270,6 +287,7 @@
 	.title {
 		width: 100%;
 		height: 11mm;
+		min-height: 11mm;
 		line-height: 11mm;
 		text-align: center;
 		font-family: 'Perdido';
@@ -323,14 +341,14 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		gap: 1mm;
+		gap: 2mm;
 		position: relative;
 	}
 	.description img {
-		max-height: 100%;
-		flex: 1;
-		object-fit: contain;
-		min-width: 10mm;
+		max-height: 80%;
+		width: auto;
+		min-width: 8mm;
+		max-width: 100%;
 	}
 	.description img:hover {
 		filter: blur(1px) grayscale();
@@ -339,8 +357,7 @@
 	.text {
 		font-family: 'Palatino';
 		height: 100%;
-		width: 100%;
-		margin-left: 1mm;
+		min-width: 10mm;
 		line-height: 1.25;
 		overflow: hidden;
 		display: flex;

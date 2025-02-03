@@ -5,6 +5,8 @@
 	import { liveQuery } from 'dexie';
 	import { browser } from '$app/environment';
 
+
+
 	export let data: PageData;
 
 	$: cards = liveQuery(() => (browser ? db.cards.toArray() : []));
@@ -22,9 +24,10 @@
 		let pairs: Partial<card_type>[] = [];
 		$cards.forEach((card) => {
 			if (pairs.length == 0) pairs = structuredClone(pair_list);
-
-			let pair = pairs.splice(Math.floor(Math.random() * pairs.length), 1)[0];
-			if (card.id) updateCard(card.id, pair);
+            if(["blue.png", "brown.png", "gun.png"].includes(card.border)) {
+                let pair = pairs.splice(Math.floor(Math.random() * pairs.length), 1)[0];
+                if (card.id) updateCard(card.id, pair);
+            }
 		});
 	}
 </script>
