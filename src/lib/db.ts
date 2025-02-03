@@ -9,7 +9,8 @@ export interface card_type {
 	description: string,
 	symbols: string[],
 	rank: string,
-	suit: string
+	suit: string,
+    lives: number
 }
 
 export const default_card: card_type = {
@@ -21,7 +22,8 @@ export const default_card: card_type = {
     description: "Szétlövik a fejedet.",
     symbols: ["bang.png"],
     rank: "Q",
-    suit: "heart"
+    suit: "heart",
+    lives: 4
 }
 
 export class CustomDexie extends Dexie {
@@ -31,7 +33,7 @@ export class CustomDexie extends Dexie {
     constructor() {
         super('cards.db');
         this.version(1).stores({
-            cards: '++id, descEnable, title, border, imageUrl, description, *symbols, rank, suit',
+            cards: '++id, descEnable, title, border, imageUrl, description, *symbols, rank, suit, lives',
         });
     }
 }
@@ -46,12 +48,7 @@ export async function addCard(card?: card_type): Promise<number> {
 }
 
 export async function updateCard(id: number, updates: Partial<card_type>): Promise<void> {
-    try {
-        await db.cards.update(id, updates);
-        console.log(`Item with ID ${id} updated successfully.`);
-    } catch (error) {
-        console.error("Failed to update item:", error);
-    }
+    await db.cards.update(id, updates);
 }
 
 export async function deleteCard(id: number): Promise<void> {

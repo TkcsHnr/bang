@@ -15,7 +15,7 @@
 	};
 
 	let hitbox = false;
-	
+
 	export let card: card_type = default_card;
 
 	let titleElement: HTMLInputElement;
@@ -52,57 +52,60 @@
 		const reader = new FileReader();
 		reader.onloadend = () => {
 			console.log(card.id);
-				if(card.id)
-					updateCard(card.id, {imageUrl: reader.result?.toString() || card.imageUrl})
+			if (card.id) updateCard(card.id, { imageUrl: reader.result?.toString() || card.imageUrl });
 		};
 		reader.readAsDataURL(selectedFile);
 	}
 
 	function addSymbol(symbol: string) {
-		if(!card.id) return;
-		updateCard(card.id, {symbols: [...card.symbols, symbol]});
+		if (!card.id) return;
+		updateCard(card.id, { symbols: [...card.symbols, symbol] });
 	}
 	function removeSymbol(index: number) {
-		if(!card.id) return;
-		
+		if (!card.id) return;
+
 		card.symbols.splice(index, 1);
-		updateCard(card.id, {symbols: card.symbols});
+		updateCard(card.id, { symbols: card.symbols });
 	}
 	function removeSymbols() {
-		if(!card.id) return;
-		updateCard(card.id, {symbols: []});
+		if (!card.id) return;
+		updateCard(card.id, { symbols: [] });
 	}
 	function updateBorder(border: string) {
-		if(!card.id) return;
-		updateCard(card.id, {border: border});
+		if (!card.id) return;
+		updateCard(card.id, { border: border });
 	}
 	function updateDescEnable() {
-		if(!card.id) return;
-		updateCard(card.id, {descEnable: !card.descEnable});
+		if (!card.id) return;
+		updateCard(card.id, { descEnable: !card.descEnable });
 	}
 	function updateRank() {
-		if(!card.id) return;
-		updateCard(card.id, {rank: card.rank});
+		if (!card.id) return;
+		updateCard(card.id, { rank: card.rank });
 	}
 	function updateSuit() {
-		if(!card.id) return;
-		updateCard(card.id, {suit: card.suit});
+		if (!card.id) return;
+		updateCard(card.id, { suit: card.suit });
 	}
 	function updateTitle() {
-		if(!card.id) return;
-		updateCard(card.id, {title: card.title});
+		if (!card.id) return;
+		updateCard(card.id, { title: card.title });
 
-		adjustTitle();	
+		adjustTitle();
 	}
 	function updateDesc() {
-		if(!card.id) return;
-		updateCard(card.id, {description: card.description});
+		if (!card.id) return;
+		updateCard(card.id, { description: card.description });
 
 		adjustDesc();
 	}
 	function removeCard() {
-		if(!card.id) return;
+		if (!card.id) return;
 		deleteCard(card.id);
+	}
+	function updateLives() {
+		if (!card.id) return;
+		updateCard(card.id, { lives: card.lives });
 	}
 
 	function downloadCard() {
@@ -150,7 +153,7 @@
 			{#each border_files as b}
 				<button class="btn h-fit p-0 relative" onclick={() => updateBorder(b)}>
 					<img src="/borders/{b}" alt={b} class="w-24" />
-					<span class="absolute mx-auto my-auto">{b.replace(".png", "")}</span>
+					<span class="absolute mx-auto my-auto">{b.replace('.png', '')}</span>
 				</button>
 			{/each}
 		</form>
@@ -160,22 +163,45 @@
 <div class="flex items-center flex-row-reverse">
 	<div class="join join-vertical">
 		<button
-			class="btn join-item btn-sm {card.descEnable ? 'btn-neutral' : 'btn-ghost border border-base-content border-opacity-20'} !rounded-tl-none"
+			class="btn join-item btn-sm {card.descEnable
+				? 'btn-neutral'
+				: 'btn-ghost border border-base-content border-opacity-20'} !rounded-tl-none"
 			onclick={updateDescEnable}
 			aria-label="description"
 		>
 			<i class="fa-solid fa-file-lines"></i>
 			<i class="fa-solid {card.descEnable ? 'fa-check' : 'fa-xmark'}"></i>
 		</button>
-		{#if ["blue.png", "brown.png", "gun.png"].includes(card.border)}
-			<select class="join-item select select-bordered select-sm text-base" bind:value={card.rank} onchange={updateRank}>
+		{#if ['blue.png', 'brown.png', 'gun.png'].includes(card.border)}
+			<select
+				class="join-item select select-bordered select-sm text-base"
+				bind:value={card.rank}
+				onchange={updateRank}
+			>
 				{#each ranks as r}
 					<option value={r}>{r}</option>
 				{/each}
 			</select>
-			<select class="join-item select select-bordered select-sm text-base" bind:value={card.suit} onchange={updateSuit}>
+			<select
+				class="join-item select select-bordered select-sm text-base"
+				bind:value={card.suit}
+				onchange={updateSuit}
+			>
 				{#each suits as s}
 					<option value={s}>{suit_map[`${s}`]}</option>
+				{/each}
+			</select>
+		{/if}
+		{#if card.border == 'character.png'}
+			<select
+				class="font-[fontAwesome] join-item select select-bordered select-sm text-xs"
+				bind:value={card.lives}
+				onchange={updateLives}
+			>
+				{#each { length: 7 } as _, l}
+					<option value={l + 1}>
+						{l + 1} &#xf004;
+					</option>
 				{/each}
 			</select>
 		{/if}
@@ -185,11 +211,7 @@
 		>
 			<img src="/symbols/anyone.png" alt="symbols" class="w-8" />
 		</button>
-		<button
-			class="btn btn-sm btn-info join-item"
-			aria-label="download"
-			onclick={downloadCard}
-		>
+		<button class="btn btn-sm btn-info join-item" aria-label="download" onclick={downloadCard}>
 			<i class="fa-solid fa-download"></i>
 		</button>
 		<button
@@ -215,17 +237,19 @@
 			<div class="hero" class:hitbox>
 				<img src={card.imageUrl} alt="hero" />
 				<div class="block"></div>
-				<input type="file" id="img{card.id}" accept="image" class="hidden" onchange={handleFileChange} />
+				<input
+					type="file"
+					id="img{card.id}"
+					accept="image"
+					class="hidden"
+					onchange={handleFileChange}
+				/>
 				<label for="img{card.id}" class="upload">Upload picture</label>
 			</div>
 			<div class="description" class:hitbox>
 				{#each card.symbols as symbol, i}
 					<button onclick={() => removeSymbol(i)} class="contents">
-						<img
-							src="/symbols/{symbol}"
-							alt={symbol}
-							class:hitbox
-						/>
+						<img src="/symbols/{symbol}" alt={symbol} class:hitbox />
 					</button>
 				{/each}
 				{#if card.descEnable}
@@ -240,7 +264,7 @@
 					</div>
 				{/if}
 			</div>
-			{#if ["blue.png", "brown.png", "gun.png"].includes(card.border)}
+			{#if ['blue.png', 'brown.png', 'gun.png'].includes(card.border)}
 				<div class="corner" class:hitbox>
 					<p>{card.rank}</p>
 					<img src="/symbols/{card.suit}.png" alt={card.suit} />
@@ -255,6 +279,13 @@
 			src="/borders/{card.border}"
 			class="absolute h-full cursor-pointer hover:scale-[1.02]"
 		/>
+		{#if card.border == 'character.png'}
+			<div class="lives">
+				{#each { length: card.lives } as _}
+					<img src="/symbols/bullet.png" alt="hp" />
+				{/each}
+			</div>
+		{/if}
 	</div>
 </div>
 
@@ -307,7 +338,8 @@
 		position: absolute;
 		bottom: 0px;
 		top: 0px;
-		box-shadow: 0 0 3px 3px white inset;
+		box-shadow: 0 0 2mm 2mm white inset;
+		transform: scale(1.025);
 	}
 	.hero img {
 		object-fit: cover;
@@ -315,7 +347,6 @@
 		height: 100%;
 		object-position: center;
 		box-shadow: 0 0 8px 8px white inset;
-
 	}
 	.upload {
 		width: 100%;
@@ -357,7 +388,7 @@
 	.text {
 		font-family: 'Palatino';
 		height: 100%;
-		min-width: 10mm;
+		min-width: 20mm;
 		line-height: 1.25;
 		overflow: hidden;
 		display: flex;
@@ -387,5 +418,17 @@
 		height: 4mm;
 		filter: drop-shadow(1px 0 0 white) drop-shadow(-0.5px 0 0 white) drop-shadow(0 1px 0 white)
 			drop-shadow(0 -0.5px 0 white);
+	}
+	.lives {
+		position: absolute;
+		right: 1mm;
+		top: 16mm;
+		display: flex;
+		flex-direction: column;
+	}
+	.lives img {
+		width: 8mm;
+		z-index: 20;
+		margin-bottom: -1mm;
 	}
 </style>
