@@ -1,0 +1,32 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@font-face {
+    font-family: 'Perdido'; /*a name to be used later*/
+    src: url('/fonts/perdido.TTF'); /*URL to font*/
+}
+
+@font-face {
+    font-family: 'Palatino';
+    src: url('/fonts/palatinolinotype_roman.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Palatino';
+    src: url('/fonts/palatinolinotype_bold.ttf') format('truetype');
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: 'Palatino';
+    src: url('/fonts/palatinolinotype_italic.ttf') format('truetype');
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Palatino';
+    src: url('/fonts/palatinolinotype_bolditalic.ttf') format('truetype');
+    font-weight: bold;
+    font-style: italic;
+}
