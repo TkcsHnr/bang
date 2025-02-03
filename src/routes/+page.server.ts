@@ -1,17 +1,11 @@
 import type { PageServerLoad } from './$types';
-import fs from 'node:fs';
-import path from 'path';
 export const load = (async () => {
-    const directoryPath = path.resolve('static/symbols');
-    let symbols: string[] = [];
-    try {
-        symbols = fs.readdirSync(directoryPath);
-    } catch(err) {}
+    const symbols = import.meta.glob('/static/symbols/*.{jpg,png,jpeg}', { eager: true });
 
-    const directoryPath2 = path.resolve('static/borders');
-    let borders: string[] = [];
-    try {
-        borders = fs.readdirSync(directoryPath2);
-    } catch(err) {}
-    return {symbols, borders};
+    const borders = import.meta.glob('/static/borders/*.{jpg,png,jpeg}', { eager: true });
+
+    const symbolNames = Object.keys(symbols).map(filePath => filePath.replace('/static/symbols/', ''));
+    const borderNames = Object.keys(borders).map(filePath => filePath.replace('/static/borders/', ''));
+
+    return { symbols: symbolNames, borders: borderNames };
 }) satisfies PageServerLoad;    
