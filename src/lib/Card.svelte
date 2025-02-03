@@ -35,7 +35,7 @@
 	}
 	function adjustDesc() {
 		if (!descElement) return;
-		let size = 12 + 1;
+		let size = 13 + 1;
 		do {
 			size--;
 			descElement.style.fontSize = size + 'px';
@@ -60,16 +60,19 @@
 	function addSymbol(symbol: string) {
 		if (!card.id) return;
 		updateCard(card.id, { symbols: [...card.symbols, symbol] });
+		adjustDesc();
 	}
 	function removeSymbol(index: number) {
 		if (!card.id) return;
 
 		card.symbols.splice(index, 1);
 		updateCard(card.id, { symbols: card.symbols });
+		adjustDesc();
 	}
 	function removeSymbols() {
 		if (!card.id) return;
 		updateCard(card.id, { symbols: [] });
+		adjustDesc();
 	}
 	function updateBorder(border: string) {
 		if (!card.id) return;
@@ -78,6 +81,7 @@
 	function updateDescEnable() {
 		if (!card.id) return;
 		updateCard(card.id, { descEnable: !card.descEnable });
+		adjustDesc();
 	}
 	function updateRank() {
 		if (!card.id) return;
@@ -265,7 +269,7 @@
 			/>
 			<div class="hero" class:hitbox>
 				<img class="{card.crop ? '!object-cover w-full h-full' : ''}" bind:this={heroImage} onload={adjustFeather} src={card.imageUrl} alt="hero" class:hitbox/>
-				<div bind:this={feather} class="feather"></div>
+				<div bind:this={feather} class="{card.border == 'role.png' ? 'hidden' : 'feather'}"></div>
 				<input
 					type="file"
 					id="img{card.id}"
@@ -426,7 +430,8 @@
 	.text {
 		font-family: 'Palatino';
 		height: 100%;
-		min-width: 20mm;
+		min-width: 15mm;
+		width: 100%;
 		line-height: 1.25;
 		overflow: hidden;
 		display: flex;
