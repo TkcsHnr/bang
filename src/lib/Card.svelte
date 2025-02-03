@@ -109,6 +109,14 @@
 		if (!card.id) return;
 		updateCard(card.id, { lives: card.lives });
 	}
+	function updateCrop() {
+		if(!card.id) return;
+		updateCard(card.id, {crop: !card.crop});
+
+		setTimeout(() => {
+			adjustFeather();
+		}, 50);
+	}
 
 	function downloadCard() {
 		toPng(cardElement).then(function (dataUrl) {
@@ -118,6 +126,16 @@
 			link.click();
 		});
 	}
+
+	let heroImage: HTMLImageElement;
+	let feather: HTMLDivElement;
+	function adjustFeather() {
+		feather.style.width = heroImage.clientWidth+2 + "px";
+		feather.style.height = heroImage.clientHeight+2 + "px";
+		feather.style.top = heroImage.offsetTop-1 + "px";
+		feather.style.left = heroImage.offsetLeft-1 + "px";
+	}
+
 	onMount(() => {
 		adjustTitle();
 		adjustDesc();
@@ -213,6 +231,15 @@
 		>
 			<img src="/symbols/anyone.png" alt="symbols" class="w-8" />
 		</button>
+		<button
+			class="btn join-item btn-sm {card.crop
+				? 'btn-neutral'
+				: 'btn-ghost border border-base-content border-opacity-20'}"
+			onclick={updateCrop}
+			aria-label="crop"
+		>
+			<i class="fa-solid {card.crop ? 'fa-crop-simple' : 'fa-image'}"></i>
+		</button>
 		<button class="btn btn-sm btn-info join-item" aria-label="download" onclick={downloadCard}>
 			<i class="fa-solid fa-download"></i>
 		</button>
@@ -237,8 +264,8 @@
 				oninput={updateTitle}
 			/>
 			<div class="hero" class:hitbox>
-				<img src={card.imageUrl} alt="hero" />
-				<div class="block"></div>
+				<img class="{card.crop ? '!object-cover w-full h-full' : ''}" bind:this={heroImage} onload={adjustFeather} src={card.imageUrl} alt="hero" class:hitbox/>
+				<div bind:this={feather} class="feather"></div>
 				<input
 					type="file"
 					id="img{card.id}"
@@ -332,27 +359,35 @@
 		background-color: #ccc;
 	}
 	.hero {
-		aspect-ratio: 1;
+		width: 42mm;
+		height: 42mm;
+		min-height: 42mm;
 		position: relative;
-	}
-	.hero .block {
-		width: 100%;
-		position: absolute;
-		bottom: 0px;
-		top: 0px;
-		box-shadow: 0 0 2mm 2mm white inset;
-		transform: scale(1.025);
-	}
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}	
 	.hero img {
-		object-fit: cover;
-		width: 100%;
-		height: 100%;
-		object-position: center;
-		box-shadow: 0 0 8px 8px white inset;
+		max-width: 100%;
+		max-height: 100%;
+		object-fit: contain;
+		position: relative;
+		display: block;
 	}
+
+	.hero .feather {
+		position: absolute;
+		box-shadow: inset 0 0 1mm 2mm white;
+		pointer-events: none;
+		z-index: 2;
+	}
+
 	.upload {
-		width: 100%;
-		height: 100%;
+		position: absolute;
+		left: 0;
+		top: 0;
+		bottom: 0;
+		right: 0;
 		opacity: 0;
 		display: flex;
 		align-items: center;
@@ -361,6 +396,7 @@
 		cursor: pointer;
 		font-family: 'Palatino';
 		color: white;
+		z-index: 10;
 	}
 	.upload:hover {
 		opacity: 1;

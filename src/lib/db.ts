@@ -10,7 +10,8 @@ export interface card_type {
 	symbols: string[],
 	rank: string,
 	suit: string,
-    lives: number
+    lives: number,
+    crop?: boolean
 }
 
 export const default_card: card_type = {
@@ -23,7 +24,8 @@ export const default_card: card_type = {
     symbols: ["bang.png"],
     rank: "Q",
     suit: "heart",
-    lives: 4
+    lives: 4,
+    crop: true
 }
 
 export class CustomDexie extends Dexie {
@@ -33,7 +35,7 @@ export class CustomDexie extends Dexie {
     constructor() {
         super('cards.db');
         this.version(1).stores({
-            cards: '++id, descEnable, title, border, imageUrl, description, *symbols, rank, suit, lives',
+            cards: '++id, descEnable, title, border, imageUrl, description, *symbols, rank, suit, lives, crop',
         });
     }
 }
