@@ -45,7 +45,6 @@ export const db = new CustomDexie();
 export async function addCard(card?: card_type): Promise<number> {
     if(!card) 
         card = structuredClone(default_card);
-    console.log(card.id);
     return await db.cards.add(card);
 }
 

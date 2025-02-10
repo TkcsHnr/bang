@@ -330,7 +330,6 @@
 		width: 56mm;
 		height: 87mm;
 		background-color: white;
-		border-radius: 20px;
 		overflow: hidden;
 		position: relative;
 		display: flex;
